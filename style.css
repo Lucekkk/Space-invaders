@@ -1,0 +1,144 @@
+:root{
+  --healthBarWidth: 0;
+}
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  *::selection {
+     
+    background-color: transparent;
+  }
+  
+  body {
+    height: 100vh;
+    overflow: hidden;
+      background-color: black;  
+     display: flex;
+    align-items: center;
+    justify-content: center;  
+  }
+ 
+    /* #canvas{
+   width:100%;
+  object-fit: contain;
+  }    */
+  .game-menu-box, .difficulty-box, .end-game-menu-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+
+    font-family: "Sixtyfour Convergence", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(1rem, 1.3rem + 2vw, 4rem);
+    text-transform: uppercase;
+    font-variation-settings:
+    "BLED" 0,
+    "SCAN" 0,
+    "XELA" 0,
+    "YELA" 0;
+  }
+.game-menu-box{
+  height: 35%;
+}
+
+.go-back{
+  cursor: pointer;
+  display: inline;
+}
+.game-menu__start-paragraph,  .game-menu__difficulty-paragraph,.difficulty-box__choose-easy-mode, .difficulty-box__choose-normal-mode, .difficulty-box__choose-hard-mode {
+  cursor: pointer;
+  border-bottom: 3px solid transparent; /* Add transparent border */
+}
+
+.game-menu__start:hover .game-menu__start-paragraph, 
+.game-menu__difficulty:hover .game-menu__difficulty-paragraph {
+  border-bottom-color: rgb(66, 171, 66); /* Change only the color on hover */
+}
+
+
+.difficulty-box{
+  height: 50%;
+  width: 75%;
+
+}
+.difficulty-box__choose{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.difficulty-box__choose-easy-mode.active, .difficulty-box__choose-normal-mode.active, .difficulty-box__choose-hard-mode.active{
+  border-bottom-color: rgb(66, 171, 66);
+}
+.outer-health-bar{
+  position: fixed;
+  top: 5%;
+  left: 50%;
+  z-index: 2;
+  transform: translate(-50%, -5%);
+  width: 35%;
+  height: 5%;
+  border: 2px solid transparent;
+  animation: showingHealthBar 1.5s 3.5s linear forwards;
+
+}
+
+@keyframes showingHealthBar{
+ 100%{
+  border-color: white;
+
+ }
+
+}
+
+.inner-health-bar{
+  width: 0;
+  height: 100%;
+
+  background-color: rgb(217, 16, 16);
+   animation: showingInnerHealthBar 4s 4s linear forwards;
+}
+
+@keyframes showingInnerHealthBar{
+  100%{
+    width: 100%;
+  }
+}
+
+.end-game-menu-box{
+  align-items: center;
+  font-size: clamp(0.2rem, 0.9rem + 1.3vw, 2rem);
+  line-height: 1.4;
+  height: 35%;
+  width: 40%;
+ 
+}
+button{
+  padding: 10px 0;
+   font-family: "Sixtyfour Convergence", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(0.4rem, 0.7rem + 2vw, 3rem);
+    text-transform: uppercase;
+    font-variation-settings:
+    "BLED" 0,
+    "SCAN" 0,
+    "XELA" 0,
+    "YELA" 0;
+    background-color: transparent;
+    border: none;
+    /* outline-style: none; */
+    
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+button:hover{
+  border-color: green;
+}
