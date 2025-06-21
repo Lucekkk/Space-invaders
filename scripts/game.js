@@ -62,7 +62,7 @@
             img: new Image(),
             x: this.width <= 1500 ? (this.width / 2) - 30 : (this.width / 2) - 40,
             y: this.width <= 1500 ? (this.height * 0.9) - 30 : (this.height * 0.9) - 40,
-            speed: 5,
+            speed: 10,
             gunCooldown: 1000,
             ifShot: false, 
             projectiles: [],
@@ -90,9 +90,9 @@
             img: new Image(),
             x : (this.width / 2) - 110,
             y: -305,
-            speedX: 1.3,
-            speedY: 1.3,
-            gunCooldown: 500,
+            speedX: 2,
+            speedY: 2,
+            gunCooldown: 600,
             ifShot: false,
             projectiles: []
         }         
@@ -104,13 +104,13 @@
     
       switch(this.pickedMode){
             case "easy":
-                this.spaceship.speed = 6;
+                this.spaceship.speed = 12;
                 this.spaceship.gunCooldown = 600;
                 this.spaceship.damageTakenToBoss = 15;
                 this.boss.gunCooldown = 700;
                 break;
                 case "hard":
-                    this.spaceship.speed = 3.5;
+                    this.spaceship.speed = 7;
                     this.spaceship.gunCooldown = 1500;
                     this.spaceship.damageTakenToBoss = 5;
                     this.boss.gunCooldown = 400;
@@ -271,9 +271,9 @@
             this.spaceship.projectiles.push({
                 x: this.spaceship.x,
                 y: this.spaceship.y,
-                speed: 3,
+                speed: 4.5,
                 color: 'white',
-                radius: 3,
+                radius: 3.5,
               
             })
         
@@ -361,9 +361,9 @@
             enemySpaceship.projectiles.push({
                 x: enemySpaceship.x,
                 y: enemySpaceship.y,
-                speed: 3,
+                speed: 4.5,
                 color: 'red',
-                radius: 3,
+                radius: 4,
               
             })
             // console.log( enemySpaceship.projectiles);
@@ -462,15 +462,15 @@
        moveEnemySpaceship(currentTime) {
 
          if(this.enemySpaceships.length <= 6){
-            this.timeFrequency = 10; //10
+            this.timeFrequency = 75; //10
         }else if(this.enemySpaceships.length >= 7 && this.enemySpaceships.length <= 12){
-            this.timeFrequency = 40; // 40
+            this.timeFrequency = 175; // 40
         }else if(this.enemySpaceships.length >= 13 && this.enemySpaceships.length <= 18){
-            this.timeFrequency = 70; // 70
+            this.timeFrequency = 250; // 70
         }else if(this.enemySpaceships.length >= 19 && this.enemySpaceships.length <= 24){
-            this.timeFrequency = 150; // 150
+            this.timeFrequency = 500; // 150
         }else if(this.enemySpaceships.length >= 25 && this.enemySpaceships.length <= 30){
-            this.timeFrequency = 300;
+            this.timeFrequency = 700;
         }
 
     if (!this.isGameRunning) return;
@@ -538,7 +538,7 @@
    bossMove() {
       if (!this.isGameRunning) return;
     if (this.boss.y < (this.height / 2) - this.boss.height) {
-        this.boss.y += 2;
+        this.boss.y += 4;
     } else if (this.bossState === "arriving") {
         this.bossState = "paused";
         // Play audio only once
@@ -649,7 +649,7 @@ generateBossHealthBar(){
             const length = Math.sqrt(dx * dx + dy * dy);
 
             // Normalize and multiply by desired speed
-            const speed = 3;
+            const speed = 4.5;
             const velocityX = (dx / length) * speed;
             const velocityY = (dy / length) * speed;
 
@@ -691,7 +691,7 @@ generateBossHealthBar(){
                                 velocityX: velocityX,
                                 velocityY: velocityY,
                                 color: 'green',
-                                radius: 3
+                                radius: 3.5
                             })
                              this.startYPlusOffset += -offset;
 
@@ -717,7 +717,7 @@ generateBossHealthBar(){
                                 velocityX: velocityX,
                                 velocityY: velocityY,
                                 color: 'green',
-                                radius: 3
+                                radius: 3.5
                             });
                            }
 
@@ -735,7 +735,7 @@ generateBossHealthBar(){
                                 velocityX: velocityX,
                                 velocityY: velocityY,
                                 color: 'green',
-                                radius: 3
+                                radius: 3.5
                             });
                            }
                            return;
@@ -747,7 +747,7 @@ generateBossHealthBar(){
                 velocityX: velocityX,
                 velocityY: velocityY,
                 color: 'green',
-                radius: 3
+                radius: 3.5
             });
         }
       
@@ -838,16 +838,16 @@ generateBossHealthBar(){
                         this.showEndMenu()
                     }
                     else if(this.percentageOfBossHealth <= 25){
-                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 4 : -4;
-                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 4 : -4;
+                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 5 : -5;
+                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 5 : -5;
                             
                     }else if(this.percentageOfBossHealth <= 50){
-                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 2.5 : -2.5;
-                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 2.5 : -2.5;
+                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 3.4 : -3.4;
+                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 3.4 : -3.4;
                              this.boss.gunCooldown = 1500;
                     }else if(this.percentageOfBossHealth <= 75){
-                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 1.7 : -1.7;
-                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 1.7 : -1.7;
+                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 2.3 : -2.3;
+                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 2.3 : -2.3;
                             this.boss.gunCooldown = 700;
                     }
 
@@ -935,88 +935,77 @@ generateBossHealthBar(){
         this.ctx.fillRect(0, 0, this.width, this.height);
      }
 
-     draw(currentTime){
-        
-         this.clearCanvas();
-       
-        this.shoot();
-        this.drawSpaceshipProjectiles();
-       
-        
-         if(this.enemySpaceships.length > 0 && this.currentRound != 3){
+     draw(currentTime) {
+    // 60 FPS lock
+    const fps = 60;
+    const framDuration = 1000 / fps; // ~16.67ms
+    if (!this.lastDrawTime) this.lastDrawTime = currentTime;
+    const delta = currentTime - this.lastDrawTime;
 
-            
-                     if(!this.canEnemyShoot){
-                        setTimeout(()=>{
-                            
-                            this.canEnemyShoot = !this.canEnemyShoot;
-                            
-                            for(let i = 0; i < this.enemySpaceships.length; i++){
-                                
-                                   this.canShoot(i);
-                            }
-                              
-                        }, 3000)
-                        this.canEnemyShoot = !this.canEnemyShoot;
-                    }
-            
-              this.enemySpaceships.forEach((enemySpaceship)=>{
-                   
-       
-                    
-                 this.shootByEnemy(enemySpaceship);
-                 this.drawEnemyProjectiles(enemySpaceship);
+    if (delta < framDuration) {
+        this.requestDrawID = window.requestAnimationFrame((t) => this.draw(t));
+        return;
+    }
+    this.lastDrawTime = currentTime;
 
-                 if(currentTime - this.beforeTime2 > 150){
+    this.clearCanvas();
 
-                    this.beforeTime2 = currentTime;
-                    this.frame = ++this.frame % this.frameMax; 				
-                    this.srcX = this.frame * this.spriteWidthPerCols;
-                    
-                      
-                    
+    this.shoot();
+    this.drawSpaceshipProjectiles();
+
+    if (this.enemySpaceships.length > 0 && this.currentRound != 3) {
+        if (!this.canEnemyShoot) {
+            setTimeout(() => {
+                this.canEnemyShoot = !this.canEnemyShoot;
+                for (let i = 0; i < this.enemySpaceships.length; i++) {
+                    this.canShoot(i);
                 }
-                this.ctx.drawImage(enemySpaceship.img, this.srcX, 0, this.spriteWidthPerCols, this.spriteHeight , enemySpaceship.x, enemySpaceship.y, this.spriteWidthPerCols, this.spriteHeight )
-                 
+            }, 3000)
+            this.canEnemyShoot = !this.canEnemyShoot;
+        }
 
-                }) 
-   
-          }
+        this.enemySpaceships.forEach((enemySpaceship) => {
+            this.shootByEnemy(enemySpaceship);
+            this.drawEnemyProjectiles(enemySpaceship);
 
-       if (this.currentRound === 3) {
-            this.ctx.drawImage(this.boss.img, this.boss.x, this.boss.y);
+            if (currentTime - this.beforeTime2 > 150) {
+                this.beforeTime2 = currentTime;
+                this.frame = ++this.frame % this.frameMax;
+                this.srcX = this.frame * this.spriteWidthPerCols;
+            }
+            this.ctx.drawImage(enemySpaceship.img, this.srcX, 0, this.spriteWidthPerCols, this.spriteHeight, enemySpaceship.x, enemySpaceship.y, this.spriteWidthPerCols, this.spriteHeight)
+        })
+    }
+
+    if (this.currentRound === 3) {
+        this.ctx.drawImage(this.boss.img, this.boss.x, this.boss.y);
 
         if (this.bossState === "arriving") {
             this.bossMove();
         } else if (this.bossState === "moving") {
-             this.drawWhereToMove();
+            this.drawWhereToMove();
             this.shootByBoss();
             this.drawBossProjectiles();
         }
-        // If paused, do nothing (boss stays in place)
     }
-       
-        this.drawText()
 
-        // this.ctx.drawImage(this.boss.img, 600, 300)
-      if(!this.didSpaceshipGetHit || (this.didSpaceshipGetHit && this.isSpaceshipVisible)) {
-    this.ctx.drawImage(this.spaceship.img, this.spaceship.x, this.spaceship.y);
+    this.drawText();
+
+    if (!this.didSpaceshipGetHit || (this.didSpaceshipGetHit && this.isSpaceshipVisible)) {
+        this.ctx.drawImage(this.spaceship.img, this.spaceship.x, this.spaceship.y);
+    }
+
+    this.moveSpaceShip();
+
+    if (this.spaceship.lives <= 0) return this.restartGame();
+    if (this.enemySpaceships.length === 0 && this.currentRound != 3) {
+        this.currentRound++;
+        return this.nextRound()
+    };
+
+    this.requestDrawID = window.requestAnimationFrame((t) => this.draw(t));
 }
-                
-        this.moveSpaceShip();
 
-        
-        if(this.spaceship.lives <= 0) return this.restartGame();
-        if(this.enemySpaceships.length === 0 && this.currentRound != 3){
-             this.currentRound++;
-            // console.log(this.currentRound)
-            return this.nextRound() 
-        };
-          
-       
-        
-      this.requestDrawID = window.requestAnimationFrame((currentTime) => this.draw(currentTime));
-     }
 
 
      restartGame(){
@@ -1164,7 +1153,7 @@ generateBossHealthBar(){
                     img: new Image(),
                     x: (this.width * percents) + spaceX,
                     y: (this.height * percents) + spaceY,
-                    speed: 5,
+                    speed: 10,
                     canShoot: false,
                     gunCooldown: this.checkDifficultyForGunCooldown(),
                     ifShot: false, 
