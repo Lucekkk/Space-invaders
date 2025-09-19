@@ -68,12 +68,7 @@
         this.spaceship = new Spaceship(this.width, this.height, this.controls, this);
 
         // console.log(this.spaceship.width)
-       
-
-      
-
-
-        
+           
 
         //BOSS
 
@@ -251,15 +246,15 @@
        moveEnemySpaceship(currentTime) {
 
          if(this.enemySpaceships.length <= 6){
-            this.timeFrequency = 700; //10
+            this.timeFrequency = 125; //125
         }else if(this.enemySpaceships.length >= 7 && this.enemySpaceships.length <= 12){
-            this.timeFrequency = 175; // 40
+            this.timeFrequency = 175; // 175
         }else if(this.enemySpaceships.length >= 13 && this.enemySpaceships.length <= 18){
-            this.timeFrequency = 250; // 70
+            this.timeFrequency = 250; // 250
         }else if(this.enemySpaceships.length >= 19 && this.enemySpaceships.length <= 24){
-            this.timeFrequency = 500; // 150
+            this.timeFrequency = 500; // 500
         }else if(this.enemySpaceships.length >= 25 && this.enemySpaceships.length <= 30){
-            this.timeFrequency = 700;
+            this.timeFrequency = 700; // 700
         }
 
     if (!this.isGameRunning) return;
