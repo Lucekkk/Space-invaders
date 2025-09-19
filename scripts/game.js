@@ -66,6 +66,23 @@
 
         
         this.spaceship = new Spaceship(this.width, this.height, this.controls, this);
+        this.spaceship = {
+            width: this.width <= 1500 ? 60 : 80,
+            height: this.width <= 1500 ? 60 : 80,
+            img: new Image(),
+            x: this.width <= 1500 ? (this.width / 2) - 30 : (this.width / 2) - 40,
+            y: this.width <= 1500 ? (this.height * 0.9) - 30 : (this.height * 0.9) - 40,
+            speed: 10,
+            gunCooldown: 1000,
+            ifShot: false, 
+            projectiles: [],
+            lives: 3,
+            imgMini: [new Image(), new Image(), new Image()],
+            damageTakenToBoss: 7
+            
+            
+        }
+
         // console.log(this.spaceship.width)
        
 
