@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders Debug</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <script type="module">
+        import SpaceInvaders from './scripts/game.js';
+        
+        // Simple test to check if controls work
+        const canvas = document.getElementById('canvas');
+        const game = new SpaceInvaders(canvas, 'normal');
+        
+        console.log('Game created:', game);
+        console.log('Controls:', game.controls);
+        console.log('Spaceship:', game.spaceship);
+        
+        // Run the game
+        game.run();
+    </script>
+</body>
+</html>

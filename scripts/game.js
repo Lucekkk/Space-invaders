@@ -1,23 +1,30 @@
  import Menu from './main.js';
+ import Controls from './controls.js';
+ import Spaceship from './spaceship.js';
  export default class SpaceInvaders{
     constructor(canvas, pickedMode = 'normal'){
 
-        this.boundKeyDown = this.keyDown.bind(this);
-        this.boundKeyUp = this.keyUp.bind(this);
+        this.controls = new Controls();
+        this.keyDown = this.controls.boundKeyDown;
+        this.keyUp = this.controls.boundKeyUp;
         
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+
+
+
         this.pickedMode = pickedMode;
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')
 
-        this.pickedMode = pickedMode;
+       
 
         this.score = 0;
         this.currentRound = 1;
 
         // console.log(this.pickedMode);
         
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        
 
         this.beforeTime = performance.now();
 
@@ -25,8 +32,8 @@
 
         this.beforeTimeBlinking = performance.now();
         
-        this.spriteWidth = this.width <= 1500 ? 736 : 960;
-        this.spriteHeight = this.width <= 1500 ? 46 : 60;
+        this.spriteWidth = (this.width <= 1500) || (this.height <= 800) ? 736 : 960;
+        this.spriteHeight = (this.width <= 1500) || (this.height <= 800) ? 46 : 60;
 
       
 
@@ -55,31 +62,16 @@
         this.isSpaceshipVisible = true;
         this.isGameRunning = true;
         
+        this.enemySpaceships = []
 
-        this.spaceship = {
-            width: this.width <= 1500 ? 60 : 80,
-            height: this.width <= 1500 ? 60 : 80,
-            img: new Image(),
-            x: this.width <= 1500 ? (this.width / 2) - 30 : (this.width / 2) - 40,
-            y: this.width <= 1500 ? (this.height * 0.9) - 30 : (this.height * 0.9) - 40,
-            speed: 5,
-            gunCooldown: 1000,
-            ifShot: false, 
-            projectiles: [],
-            lives: 3,
-            imgMini: [new Image(), new Image(), new Image()],
-            damageTakenToBoss: 7
-            
-            
-        }
-
+        
+        this.spaceship = new Spaceship(this.width, this.height, this.controls, this);
         // console.log(this.spaceship.width)
-        this.spaceship.img.src = this.width <= 1500 ? 'images/spaceship60.png' : 'images/spaceship.png';
+       
 
       
 
 
-        this.enemySpaceships = []
         
 
         //BOSS
@@ -90,9 +82,9 @@
             img: new Image(),
             x : (this.width / 2) - 110,
             y: -305,
-            speedX: 1.3,
-            speedY: 1.3,
-            gunCooldown: 500,
+            speedX: 2,
+            speedY: 2,
+            gunCooldown: 600,
             ifShot: false,
             projectiles: []
         }         
@@ -104,232 +96,28 @@
     
       switch(this.pickedMode){
             case "easy":
-                this.spaceship.speed = 6;
-                this.spaceship.gunCooldown = 600;
-                this.spaceship.damageTakenToBoss = 15;
+                this.spaceship.properties.speed = 12;
+                this.spaceship.properties.gunCooldown = 600;
+                this.spaceship.properties.damageTakenToBoss = 15;
                 this.boss.gunCooldown = 700;
                 break;
                 case "hard":
-                    this.spaceship.speed = 3.5;
-                    this.spaceship.gunCooldown = 1500;
-                    this.spaceship.damageTakenToBoss = 5;
+                    this.spaceship.properties.speed = 7;
+                    this.spaceship.properties.gunCooldown = 1500;
+                    this.spaceship.properties.damageTakenToBoss = 5;
                     this.boss.gunCooldown = 400;
                 break;        
         }
 
-        this.key = {
-            w: {pressed: false},
-            a: {pressed: false},
-            s: {pressed: false},
-            d: {pressed: false},
-            spaceBar: {pressed: false}
-
-        }
+      
     }
 
-        //CONTROLS
-
-    keyDown(e){
-        //   console.log(e.key)
-        switch (e.key){
-            //left
-            case 'a':
-            case 'A':
-            case 'ArrowLeft':    
-                this.key.a.pressed = true;      
-                break;
-            //up
-            case 'w':
-            case 'W':
-            case 'ArrowUp':    
-                this.key.w.pressed = true;      
-                break;
-            //right
-            case 'd':
-            case 'D':
-            case 'ArrowRight':
-                this.key.d.pressed = true;      
-               break; 
-            //down
-            case 's':
-            case 'S':
-            case 'ArrowDown':
-                this.key.s.pressed = true;      
-                break;
-            //Spacebar
-            case ' ':
-            case 'Clear':    
-                this.key.spaceBar.pressed = true;      
-                break;
-                   
-        }
-    }
-
-    keyUp(e){
-        switch(e.key){
-                   //left
-                   case 'a':
-                   case 'A':
-                   case 'ArrowLeft':
-                       this.key.a.pressed = false;     
-                       break;
-                   //up
-                   case 'w':
-                   case 'W':
-                   case 'ArrowUp': 
-                       this.key.w.pressed = false;      
-                       break;
-                   //right
-                   case 'd':
-                   case 'D':
-                   case 'ArrowRight':  
-                       this.key.d.pressed = false;      
-                      break; 
-                   //down
-                   case 's':
-                   case 'S':
-                   case 'ArrowDown':  
-                       this.key.s.pressed = false;      
-                       break;
-                    // Spacebar
-                    case ' ':
-                    case 'Clear':    
-                        this.key.spaceBar.pressed = false;   
-                        break;                 
-               }
-           }
-
-      moveSpaceShip(){
-          if (!this.isGameRunning) return;
-
-        let dx = 0; // Change in x
-        let dy = 0; // Change in y
-
-    if (this.key.w.pressed) {
-        dy -= this.spaceship.speed;
-    }
-    if (this.key.a.pressed) {
-        dx -= this.spaceship.speed;
-    }
-    if (this.key.s.pressed) {
-        dy += this.spaceship.speed;
-    }
-    if (this.key.d.pressed) {
-        dx += this.spaceship.speed;
-    }
     
-    // Normalize diagonal movement
-    if (dx !== 0 && dy !== 0) {
-        const normalizationFactor = Math.sqrt(2);
-        dx /= normalizationFactor;
-        dy /= normalizationFactor;
-    }
-     
-    // Update spaceship position
-    const percentageX = Math.round((this.spaceship.x / (this.width - this.spaceship.width)) * 100);
-    const percentageY = Math.round((this.spaceship.y / (this.height - this.spaceship.width)) * 100);
 
-    if (percentageX > 0 || dx > 0) {
-        if (percentageX < 100 || dx < 0) {
-            this.spaceship.x += dx;
-        }
-    }
-    if (percentageY > 75 || dy > 0) {
-        if (percentageY < 100 || dy < 0) {
-            this.spaceship.y += dy;
-        }
-    }
-      }
+     
       //////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // Spaceship shooting
-       
-       shoot(){
-          if (!this.isGameRunning) return;
-
-          if(this.key.spaceBar.pressed && !this.spaceship.ifShot){
-             
-                    // console.log('strzela');
-                    this.generateSpaceshipProjectile();
-                    this.spaceship.ifShot = !this.spaceship.ifShot;
-                    const shootAudio = new Audio('audio/shoot.mp3');
-                    
-                    shootAudio.play();
-                    
-                    setTimeout(()=> {
-                        this.spaceship.ifShot = !this.spaceship.ifShot;
-
-                    }, this.spaceship.gunCooldown)
-                                    
-              }
-       }
-
-
-       generateSpaceshipProjectile(){
-          if (!this.isGameRunning) return;
-         
-            this.spaceship.projectiles.push({
-                x: this.spaceship.x,
-                y: this.spaceship.y,
-                speed: 3,
-                color: 'white',
-                radius: 3,
-              
-            })
-        
-        
-        // console.log(this.spaceship.projectiles);
-       }
-
-       drawSpaceshipProjectiles(){
-        if (!this.isGameRunning) return;
-        this.spaceship.projectiles.forEach((projectile, index) => {
-            this.drawSpaceshipProjectile(projectile, index);
-        })
-       }
-
-       drawSpaceshipProjectile(projectile, index){
-        if (!this.isGameRunning) return;
-            this.ctx.save();
-            projectile.y -= projectile.speed;
-
-            // Remove projectile if it leaves the screen
-            if(projectile.y < 0){
-                this.spaceship.projectiles.splice(index, 1);
-                this.ctx.restore();
-                return;
-            }
-
-            // Check collision with all enemies
-            for(let enemyIndex = 0; enemyIndex < this.enemySpaceships.length; enemyIndex++) {
-                const enemySpaceship = this.enemySpaceships[enemyIndex];
-                if(
-                    (projectile.x >= enemySpaceship.x - (this.spriteWidthPerCols / 2) && projectile.x <= enemySpaceship.x + (this.spriteWidthPerCols / 2)) &&
-                    (projectile.y >= enemySpaceship.y && projectile.y <= enemySpaceship.y + this.spriteHeight )
-                ){
-                    this.spaceship.projectiles.splice(index, 1);
-                    this.destroyEnemy(enemyIndex);
-                    
-                    const explosionAudio = new Audio('audio/explosion.mp3');
-                    explosionAudio.volume = 0.45;
-                    explosionAudio.play();
-                    this.ctx.restore();
-                    return; // Stop further processing for this projectile
-                }
-            }
-
-            if(this.currentRound === 3){
-                this.checkBossHealth(projectile, index)
-
-            }
-
-            // Draw projectile if not removed
-            this.ctx.fillStyle = projectile.color;
-            this.ctx.beginPath();
-            this.ctx.arc(projectile.x + (this.spaceship.width / 2), projectile.y, projectile.radius, 0, 2 * Math.PI);
-            this.ctx.fill();
-            this.ctx.restore();
-}
+      
 
        // Enemy Spaceships
 
@@ -361,9 +149,9 @@
             enemySpaceship.projectiles.push({
                 x: enemySpaceship.x,
                 y: enemySpaceship.y,
-                speed: 3,
+                speed: 4.5,
                 color: 'red',
-                radius: 3,
+                radius: 4,
               
             })
             // console.log( enemySpaceship.projectiles);
@@ -462,15 +250,15 @@
        moveEnemySpaceship(currentTime) {
 
          if(this.enemySpaceships.length <= 6){
-            this.timeFrequency = 10; //10
+            this.timeFrequency = 700; //10
         }else if(this.enemySpaceships.length >= 7 && this.enemySpaceships.length <= 12){
-            this.timeFrequency = 40; // 40
+            this.timeFrequency = 175; // 40
         }else if(this.enemySpaceships.length >= 13 && this.enemySpaceships.length <= 18){
-            this.timeFrequency = 70; // 70
+            this.timeFrequency = 250; // 70
         }else if(this.enemySpaceships.length >= 19 && this.enemySpaceships.length <= 24){
-            this.timeFrequency = 150; // 150
+            this.timeFrequency = 500; // 150
         }else if(this.enemySpaceships.length >= 25 && this.enemySpaceships.length <= 30){
-            this.timeFrequency = 300;
+            this.timeFrequency = 700;
         }
 
     if (!this.isGameRunning) return;
@@ -538,7 +326,7 @@
    bossMove() {
       if (!this.isGameRunning) return;
     if (this.boss.y < (this.height / 2) - this.boss.height) {
-        this.boss.y += 2;
+        this.boss.y += 4;
     } else if (this.bossState === "arriving") {
         this.bossState = "paused";
         // Play audio only once
@@ -557,8 +345,8 @@
             this.bossState = "moving";
             this.arrivalAudioPlayed = false;
 
-             document.addEventListener('keydown', this.boundKeyDown);
-                document.addEventListener('keyup', this.boundKeyUp);
+             document.addEventListener('keydown', this.keyDown);
+                document.addEventListener('keyup', this.keyUp);
             
         }, 4000);
     }
@@ -649,7 +437,7 @@ generateBossHealthBar(){
             const length = Math.sqrt(dx * dx + dy * dy);
 
             // Normalize and multiply by desired speed
-            const speed = 3;
+            const speed = 4.5;
             const velocityX = (dx / length) * speed;
             const velocityY = (dy / length) * speed;
 
@@ -691,7 +479,7 @@ generateBossHealthBar(){
                                 velocityX: velocityX,
                                 velocityY: velocityY,
                                 color: 'green',
-                                radius: 3
+                                radius: 3.5
                             })
                              this.startYPlusOffset += -offset;
 
@@ -717,7 +505,7 @@ generateBossHealthBar(){
                                 velocityX: velocityX,
                                 velocityY: velocityY,
                                 color: 'green',
-                                radius: 3
+                                radius: 3.5
                             });
                            }
 
@@ -735,7 +523,7 @@ generateBossHealthBar(){
                                 velocityX: velocityX,
                                 velocityY: velocityY,
                                 color: 'green',
-                                radius: 3
+                                radius: 3.5
                             });
                            }
                            return;
@@ -747,7 +535,7 @@ generateBossHealthBar(){
                 velocityX: velocityX,
                 velocityY: velocityY,
                 color: 'green',
-                radius: 3
+                radius: 3.5
             });
         }
       
@@ -821,7 +609,7 @@ generateBossHealthBar(){
                     const outerHealthBar = parseInt(getComputedStyle(document.querySelector('.outer-health-bar')).width, 10);
                     
                     const healthBar = parseInt(getComputedStyle(innerHealthBar).width, 10);
-                    let newHealthBar = healthBar - this.spaceship.damageTakenToBoss;
+                    let newHealthBar = healthBar - this.spaceship.properties.damageTakenToBoss;
                      
                     newHealthBar = Math.sign(newHealthBar) === -1 ? 0 : newHealthBar;
                     
@@ -838,16 +626,16 @@ generateBossHealthBar(){
                         this.showEndMenu()
                     }
                     else if(this.percentageOfBossHealth <= 25){
-                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 4 : -4;
-                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 4 : -4;
+                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 5 : -5;
+                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 5 : -5;
                             
                     }else if(this.percentageOfBossHealth <= 50){
-                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 2.5 : -2.5;
-                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 2.5 : -2.5;
+                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 3.4 : -3.4;
+                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 3.4 : -3.4;
                              this.boss.gunCooldown = 1500;
                     }else if(this.percentageOfBossHealth <= 75){
-                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 1.7 : -1.7;
-                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 1.7 : -1.7;
+                            this.boss.speedX = Math.sign(this.boss.speedX) === 1 ? 2.3 : -2.3;
+                            this.boss.speedY = Math.sign(this.boss.speedY) === 1 ? 2.3 : -2.3;
                             this.boss.gunCooldown = 700;
                     }
 
@@ -863,8 +651,8 @@ generateBossHealthBar(){
         cancelAnimationFrame(this.requestMoveID);
         cancelAnimationFrame(this.requestDrawID);
         this.isGameRunning = false;
-        document.removeEventListener('keydown', this.boundKeyDown);
-        document.removeEventListener('keyup', this.boundKeyUp);
+        document.removeEventListener('keydown', this.keyDown);
+        document.removeEventListener('keyup', this.keyUp);
         this.bossAudioMusic.pause();
 
         setTimeout(()=>{
@@ -935,88 +723,77 @@ generateBossHealthBar(){
         this.ctx.fillRect(0, 0, this.width, this.height);
      }
 
-     draw(currentTime){
-        
-         this.clearCanvas();
-       
-        this.shoot();
-        this.drawSpaceshipProjectiles();
-       
-        
-         if(this.enemySpaceships.length > 0 && this.currentRound != 3){
+     draw(currentTime) {
+    // 60 FPS lock
+    const fps = 60;
+    const framDuration = 1000 / fps; // ~16.67ms
+    if (!this.lastDrawTime) this.lastDrawTime = currentTime;
+    const delta = currentTime - this.lastDrawTime;
 
-            
-                     if(!this.canEnemyShoot){
-                        setTimeout(()=>{
-                            
-                            this.canEnemyShoot = !this.canEnemyShoot;
-                            
-                            for(let i = 0; i < this.enemySpaceships.length; i++){
-                                
-                                   this.canShoot(i);
-                            }
-                              
-                        }, 3000)
-                        this.canEnemyShoot = !this.canEnemyShoot;
-                    }
-            
-              this.enemySpaceships.forEach((enemySpaceship)=>{
-                   
-       
-                    
-                 this.shootByEnemy(enemySpaceship);
-                 this.drawEnemyProjectiles(enemySpaceship);
+    if (delta < framDuration) {
+        this.requestDrawID = window.requestAnimationFrame((t) => this.draw(t));
+        return;
+    }
+    this.lastDrawTime = currentTime;
 
-                 if(currentTime - this.beforeTime2 > 150){
+    this.clearCanvas();
 
-                    this.beforeTime2 = currentTime;
-                    this.frame = ++this.frame % this.frameMax; 				
-                    this.srcX = this.frame * this.spriteWidthPerCols;
-                    
-                      
-                    
+    this.spaceship.shoot();
+    this.spaceship.drawProjectiles();
+
+    if (this.enemySpaceships.length > 0 && this.currentRound != 3) {
+        if (!this.canEnemyShoot) {
+            setTimeout(() => {
+                this.canEnemyShoot = !this.canEnemyShoot;
+                for (let i = 0; i < this.enemySpaceships.length; i++) {
+                    this.canShoot(i);
                 }
-                this.ctx.drawImage(enemySpaceship.img, this.srcX, 0, this.spriteWidthPerCols, this.spriteHeight , enemySpaceship.x, enemySpaceship.y, this.spriteWidthPerCols, this.spriteHeight )
-                 
+            }, 3000)
+            this.canEnemyShoot = !this.canEnemyShoot;
+        }
 
-                }) 
-   
-          }
+        this.enemySpaceships.forEach((enemySpaceship) => {
+            this.shootByEnemy(enemySpaceship);
+            this.drawEnemyProjectiles(enemySpaceship);
 
-       if (this.currentRound === 3) {
-            this.ctx.drawImage(this.boss.img, this.boss.x, this.boss.y);
+            if (currentTime - this.beforeTime2 > 150) {
+                this.beforeTime2 = currentTime;
+                this.frame = ++this.frame % this.frameMax;
+                this.srcX = this.frame * this.spriteWidthPerCols;
+            }
+            this.ctx.drawImage(enemySpaceship.img, this.srcX, 0, this.spriteWidthPerCols, this.spriteHeight, enemySpaceship.x, enemySpaceship.y, this.spriteWidthPerCols, this.spriteHeight)
+        })
+    }
+
+    if (this.currentRound === 3) {
+        this.ctx.drawImage(this.boss.img, this.boss.x, this.boss.y);
 
         if (this.bossState === "arriving") {
             this.bossMove();
         } else if (this.bossState === "moving") {
-             this.drawWhereToMove();
+            this.drawWhereToMove();
             this.shootByBoss();
             this.drawBossProjectiles();
         }
-        // If paused, do nothing (boss stays in place)
     }
-       
-        this.drawText()
 
-        // this.ctx.drawImage(this.boss.img, 600, 300)
-      if(!this.didSpaceshipGetHit || (this.didSpaceshipGetHit && this.isSpaceshipVisible)) {
-    this.ctx.drawImage(this.spaceship.img, this.spaceship.x, this.spaceship.y);
+    this.drawText();
+
+    if (!this.didSpaceshipGetHit || (this.didSpaceshipGetHit && this.isSpaceshipVisible)) {
+        this.ctx.drawImage(this.spaceship.img, this.spaceship.x, this.spaceship.y);
+    }
+
+    this.spaceship.move();
+
+    if (this.spaceship.lives <= 0) return this.restartGame();
+    if (this.enemySpaceships.length === 0 && this.currentRound != 3) {
+        this.currentRound++;
+        return this.nextRound()
+    };
+
+    this.requestDrawID = window.requestAnimationFrame((t) => this.draw(t));
 }
-                
-        this.moveSpaceShip();
 
-        
-        if(this.spaceship.lives <= 0) return this.restartGame();
-        if(this.enemySpaceships.length === 0 && this.currentRound != 3){
-             this.currentRound++;
-            // console.log(this.currentRound)
-            return this.nextRound() 
-        };
-          
-       
-        
-      this.requestDrawID = window.requestAnimationFrame((currentTime) => this.draw(currentTime));
-     }
 
 
      restartGame(){
@@ -1054,16 +831,16 @@ generateBossHealthBar(){
 
         this.requestMoveID = null;
         this.requestDrawID = null;
-        this.spaceship.projectiles = [];
+        this.spaceship.projectiles.length = 0; // Clear the projectiles array
         
-        this.key.w.pressed = false
-        this.key.a.pressed = false
-        this.key.s.pressed = false
-        this.key.d.pressed = false
-        this.key.spaceBar.pressed = false
+        this.controls.key.w.pressed = false
+        this.controls.key.a.pressed = false
+        this.controls.key.s.pressed = false
+        this.controls.key.d.pressed = false
+        this.controls.key.spaceBar.pressed = false
 
-        document.removeEventListener('keydown', this.boundKeyDown);
-        document.removeEventListener('keyup', this.boundKeyUp);
+        document.removeEventListener('keydown', this.keyDown);
+        document.removeEventListener('keyup', this.keyUp);
       
 
         setTimeout(()=>{
@@ -1108,8 +885,8 @@ generateBossHealthBar(){
                     this.draw();
                     if(this.currentRound === 2){
                         this.moveEnemySpaceship();
-                        document.addEventListener('keydown', this.boundKeyDown);
-                        document.addEventListener('keyup', this.boundKeyUp);
+                        document.addEventListener('keydown', this.keyDown);
+                        document.addEventListener('keyup', this.keyUp);
                     }
                 
             },4000)
@@ -1122,7 +899,7 @@ generateBossHealthBar(){
      loadEnemySpaceships(){
          this.enemySpaceships.forEach((enemySpaceship)=>{
              enemySpaceship.img.addEventListener("load", () =>  this.ctx.drawImage(enemySpaceship.img, this.srcX, 0, this.spriteWidthPerCols, this.spriteHeight , enemySpaceship.x, enemySpaceship.y, this.spriteWidthPerCols, this.spriteHeight ));
-                enemySpaceship.img.src = this.width <= 1500 ? 'images/enemyShip736.png' : 'images/enemyShip.png';
+                enemySpaceship.img.src = (this.width <= 1500) || (this.height <= 800) ? 'images/enemyShip736.png' : 'images/enemyShip.png';
                  
             
             })
@@ -1143,7 +920,7 @@ generateBossHealthBar(){
         let spaceXOffset = 0;
         let spaceYOffset = 0;
 
-        if(this.width <= 1500){
+        if((this.width <= 1500) || (this.height <= 800)){
             percents = 0.2
             spaceXOffset = 70; 
             spaceYOffset = 80; 
@@ -1164,7 +941,7 @@ generateBossHealthBar(){
                     img: new Image(),
                     x: (this.width * percents) + spaceX,
                     y: (this.height * percents) + spaceY,
-                    speed: 5,
+                    speed: 10,
                     canShoot: false,
                     gunCooldown: this.checkDifficultyForGunCooldown(),
                     ifShot: false, 
@@ -1192,7 +969,7 @@ generateBossHealthBar(){
         let spaceYOffset = 0;
         let multiplier = 0;
 
-        if(this.width <= 1500){
+        if((this.width <= 1500) || (this.height <= 800)){
             percentsX = 0.3;
             percentsY = 0.08;
             spaceXOffset = 70; 
@@ -1258,8 +1035,8 @@ generateBossHealthBar(){
             
             // console.log(this.spriteWidthPerCols,  this.spriteHeight)
             
-        document.addEventListener('keydown', this.boundKeyDown);
-        document.addEventListener('keyup', this.boundKeyUp);
+        document.addEventListener('keydown', this.keyDown);
+        document.addEventListener('keyup', this.keyUp);
 
             
         this.drawText();
